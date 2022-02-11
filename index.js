@@ -1,8 +1,5 @@
 const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
 require("dotenv").config();
-console.log(process.env.URL);
-console.log(process.env.PORT);
-console.log(process.env.BOT_TOKEN);
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const urgencyStepHandler = new Composer();
@@ -76,8 +73,8 @@ bot.start((ctx) => {
 
 bot.launch({
   webhook: {
-    domain: process.env.URL || "https://996f-109-64-168-218.ngrok.io",
-    port: process.env.PORT || 3000,
+    domain: process.env.URL,
+    port: process.env.PORT,
   },
 });
 
