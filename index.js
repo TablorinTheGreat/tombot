@@ -1,4 +1,4 @@
-// const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
+const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
 require("dotenv").config();
 console.log(process.env.URL);
 console.log(process.env.PORT);
