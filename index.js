@@ -2,17 +2,36 @@ const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
 require("dotenv").config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
-const stepHandler = new Composer();
+const urgencyStepHandler = new Composer();
+const intervalStepHandler = new Composer();
 
-stepHandler.action(/_\w+/, (ctx) => {
+const intervalReply = (ctx) => {
+  ctx.reply("כל כמה זמן תרצה לתזכר אותי?", {
+    parse_mode: "HTML",
+    ...Markup.inlineKeyboard([
+      Markup.button.callback("30 דקות", "_30min"),
+      Markup.button.callback("שעה", "_hour"),
+      Markup.button.callback("שעתיים", "_2hours"),
+      Markup.button.callback("יום", "_day"),
+    ]),
+  });
+};
+
+urgencyStepHandler.action(/_\w+/, (ctx) => {
   ctx.session.request.urgency = ctx.match[0];
   if (ctx.match[0] === "_urgent") {
     ctx.reply("למה זה דחוף?");
     return ctx.wizard.next();
   }
 
-  ctx.reply("כל כמה זמן תרצה לתזכר אותי?");
+  intervalReply(ctx);
   return ctx.wizard.selectStep(ctx.wizard.cursor + 2);
+});
+
+intervalStepHandler.action(/_\w+/, (ctx) => {
+  ctx.session.request.timeInterval = ctx.match[0];
+  ctx.reply(JSON.stringify(ctx.session.request));
+  return ctx.scene.leave();
 });
 
 const requestWizard = new Scenes.WizardScene(
@@ -34,17 +53,13 @@ const requestWizard = new Scenes.WizardScene(
     });
     return ctx.wizard.next();
   },
-  stepHandler,
+  urgencyStepHandler,
   (ctx) => {
     ctx.session.request.urgentReason = ctx.message.text;
-    ctx.reply("כל כמה זמן תרצה לתזכר אותי?");
+    intervalReply(ctx);
     return ctx.wizard.next();
   },
-  (ctx) => {
-    ctx.session.request.timeInterval = ctx.message.text;
-    ctx.reply(JSON.stringify(ctx.session.request));
-    return ctx.scene.leave();
-  }
+  intervalStepHandler
 );
 const stage = new Scenes.Stage([requestWizard]);
 
@@ -58,8 +73,8 @@ bot.start((ctx) => {
 
 bot.launch({
   webhook: {
-    domain: "https://95b2-80-246-137-63.ngrok.io",
-    port: 8888,
+    domain: process.env.URL,
+    port: process.env.PORT,
   },
 });
 
