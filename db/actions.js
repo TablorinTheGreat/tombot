@@ -28,10 +28,6 @@ const addUserIfDoesntExist = async (user) => {
   );
 };
 const getRequestsByUser = (userid) => {
-  if (userid === 1320316049) {
-    return getAllRequests();
-  }
-
   return connection.query(
     "SELECT id, content, created_on FROM requests WHERE user_id = $1 AND closed_by is null",
     [userid]
@@ -40,7 +36,7 @@ const getRequestsByUser = (userid) => {
 
 const getAllRequests = () => {
   return connection.query(
-    `SELECT r.id, first_name, last_name, content, urgency, urgent_reason, created_on 
+    `SELECT r.id, user_id, first_name, last_name, content, urgency, urgent_reason, created_on 
     FROM requests as r 
     INNER JOIN users as u on r.user_id = u.id
     WHERE closed_by is null`
@@ -59,4 +55,5 @@ module.exports = {
   addUserIfDoesntExist,
   getRequestsByUser,
   closeRequest,
+  getAllRequests,
 };
