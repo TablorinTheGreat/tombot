@@ -1,5 +1,5 @@
 const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
-const { getRequestsByUser } = require("../db/actions");
+const { getRequestsByUser, closeRequest } = require("../db/actions");
 require("dotenv").config();
 const { newRequest, id } = require("./scenes/newRequest");
 
@@ -15,14 +15,30 @@ bot.start((ctx) => {
   ctx.scene.enter(id);
 });
 
-bot.command("/getRequests", (ctx) => {
+bot.command("/getrequests", (ctx) => {
   getRequestsByUser(ctx.update.message.from.id)
     .then(({ rows }) => {
-      let content = rows.map((row) => row.content).join("\n");
-      ctx.reply(content);
+      ctx.replyWithMarkdown(
+        "לחץ לסגירת בקשה",
+        Markup.inlineKeyboard(
+          rows.map((row) => Markup.button.callback(row.content, `${row.id}`)),
+          { columns: 1 }
+        )
+      );
     })
     .catch((err) => {
       console.log(err);
+    });
+});
+
+bot.action(/\d+/, (ctx) => {
+  closeRequest(parseInt(ctx.match[0]), ctx.update.callback_query.from.id)
+    .then((res) => {
+      if (res.rowCount) ctx.reply("הבקשה נסגרה בהצלחה");
+      else throw "row count is 0";
+    })
+    .catch((err) => {
+      ctx.reply("הייתה בעיה בסגירת הבקשה");
     });
 });
 
