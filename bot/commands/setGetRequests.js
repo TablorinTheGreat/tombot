@@ -4,6 +4,7 @@ const {
   closeRequest,
   getAllRequests,
 } = require("../../db/actions");
+const { switchReminderOff } = require("../../schedueller/reminders");
 
 const setGetRequests = (bot) => {
   bot.command("/getrequests", (ctx) => {
@@ -46,6 +47,7 @@ const setGetRequests = (bot) => {
         if (res.rowCount) {
           ctx.reply("הבקשה נסגרה בהצלחה");
           if (ctx.session.rows) {
+            switchReminderOff(requestid);
             let request = ctx.session.rows.find((row) => (row.id = requestid));
             if (ctx.update.callback_query.from.id != 1320316049)
               request.user_id = 1320316049;
@@ -54,7 +56,7 @@ const setGetRequests = (bot) => {
               `הבקשה ${request.content} בוצעה`
             );
           }
-        } else throw "row count is 0";
+        } else ctx.reply("הבקשה כבר סגורה");
       })
       .catch((err) => {
         ctx.reply("הייתה בעיה בסגירת הבקשה");

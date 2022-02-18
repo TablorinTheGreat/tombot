@@ -15,7 +15,7 @@ const createRequest = (request, user) =>
       },
     });
     connection
-      .query(query.sql, query.values)
+      .query(query.sql + " RETURNING *", query.values)
       .then((res) => resolve(res))
       .catch((err) => reject(err));
   });
@@ -36,7 +36,7 @@ const getRequestsByUser = (userid) => {
 
 const getAllRequests = () => {
   return connection.query(
-    `SELECT r.id, user_id, first_name, last_name, content, urgency, urgent_reason, created_on 
+    `SELECT r.id, user_id, first_name, content, urgency, urgent_reason, created_on
     FROM requests as r 
     INNER JOIN users as u on r.user_id = u.id
     WHERE closed_by is null`
@@ -50,10 +50,25 @@ const closeRequest = (requestId, userid) => {
   );
 };
 
+const getReminders = () => {
+  return connection.query(
+    `SELECT r.id, first_name, content, urgency, urgent_reason, time_interval
+    FROM requests as r 
+    INNER JOIN users as u on r.user_id = u.id
+    where closed_by is null`
+  );
+};
+
+const getCronDict = () => {
+  return connection.query("select * from interval_to_cron");
+};
+
 module.exports = {
   createRequest,
   addUserIfDoesntExist,
   getRequestsByUser,
   closeRequest,
   getAllRequests,
+  getReminders,
+  getCronDict,
 };
