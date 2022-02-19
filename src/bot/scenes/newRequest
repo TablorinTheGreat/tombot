@@ -3,6 +3,8 @@ const createRequest = require("../../requests/createRequest");
 const { addReminder } = require("../../schedueller/reminders");
 require("dotenv").config();
 
+const id = "NEW_REQUEST_WIZARD";
+
 const urgencyStepHandler = new Composer();
 const intervalStepHandler = new Composer();
 
@@ -42,7 +44,7 @@ intervalStepHandler.action(/\w+/, (ctx) => {
 });
 
 const newRequest = new Scenes.WizardScene(
-  "NEW_REQUEST_WIZARD",
+  id,
   (ctx) => {
     ctx.reply("מה את/ה צריך?");
     ctx.session.request = {
@@ -71,4 +73,4 @@ const newRequest = new Scenes.WizardScene(
   intervalStepHandler
 );
 
-module.exports = { newRequest, id: "NEW_REQUEST_WIZARD" };
+module.exports = { newRequest, id };
