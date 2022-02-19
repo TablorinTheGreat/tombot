@@ -1,6 +1,5 @@
 const { Markup } = require("telegraf");
 const { getRequestsByUser, getAllRequests } = require("../../db/actions");
-const { switchReminderOff } = require("../../schedueller/reminders");
 const closeRequest = require("../../requests/closeRequest");
 
 const setGetRequests = (bot) => {

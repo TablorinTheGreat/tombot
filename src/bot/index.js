@@ -1,6 +1,5 @@
-const { Telegraf, Scenes, session, Markup, Composer } = require("telegraf");
+const { Telegraf, Scenes, session } = require("telegraf");
 const { addUser } = require("../db/actions");
-const { addReminders, count } = require("../schedueller/reminders");
 const setAnonymus = require("./commands/setAnonymus");
 const setGetRequests = require("./commands/setGetRequests");
 const setNewRequest = require("./commands/setNewRequest");

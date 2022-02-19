@@ -22,7 +22,7 @@ expressApp.post("/closeRequest", (req, res) => {
   TodoistId2Request(event.id)
     .then(({ rows }) => {
       closeRequest(rows[0], 1320316049, (content) =>
-        bot.telegram.sendMessage(rows[0].user_id, content)
+        bot.telegram.sendMessage(1320316049, content)
       );
     })
     .catch((err) => {

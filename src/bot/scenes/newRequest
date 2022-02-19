@@ -1,6 +1,5 @@
 const { Scenes, Markup, Composer } = require("telegraf");
 const createRequest = require("../../requests/createRequest");
-const { addReminder } = require("../../schedueller/reminders");
 require("dotenv").config();
 
 const id = "NEW_REQUEST_WIZARD";

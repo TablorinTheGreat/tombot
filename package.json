@@ -16,7 +16,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "hotstart": "nodemon index.js",
-    "debug": "nodemon --inspect index.js"
+    "debug": "nodemon --inspect index.js",
+    "lint":"eslint"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/TablorinTheGreat/tombot/issues"
   },
-  "homepage": "https://github.com/TablorinTheGreat/tombot#readme"
+  "homepage": "https://github.com/TablorinTheGreat/tombot#readme",
+  "devDependencies": {
+    "eslint": "^8.9.0"
+  }
 }

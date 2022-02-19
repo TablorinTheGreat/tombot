@@ -23,8 +23,8 @@ const saveTodoistId = (requestId, todoistId) => {
 };
 
 const createRequest = (request) =>
-  new Promise(async (resolve, reject) => {
-    const res = await connection
+  new Promise((resolve, reject) => {
+    connection
       .query(
         `INSERT INTO requests(user_id, content, urgency, urgent_reason, time_interval, created_on)
    VALUES($1,$2,$3,$4,$5,$6) RETURNING id`,
@@ -37,20 +37,20 @@ const createRequest = (request) =>
           new Date(),
         ]
       )
+      .then(({ rows }) => {
+        if (!rows.length) throw "no rows in createRequest";
+        let requestId = rows[0].id;
+        connection
+          .query(
+            `SELECT r.id, first_name, content, urgency, urgent_reason, time_interval
+          FROM requests as r 
+          INNER JOIN users as u on r.user_id = u.id
+          where r.id = ${requestId}`
+          )
+          .then(resolve)
+          .catch(reject);
+      })
       .catch(reject);
-
-    if (res.rows && res.rows.length) {
-      requestId = res.rows[0].id;
-      connection
-        .query(
-          `SELECT r.id, first_name, content, urgency, urgent_reason, time_interval
-        FROM requests as r 
-        INNER JOIN users as u on r.user_id = u.id
-        where r.id = ${requestId}`
-        )
-        .then(resolve)
-        .catch(reject);
-    }
   });
 
 const addUser = async (user) => {

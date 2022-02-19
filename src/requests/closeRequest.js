@@ -3,7 +3,7 @@ const { closeRequest } = require("../db/actions");
 const { switchReminderOff } = require("../schedueller/reminders");
 const completeItem = require("../todoist/completeItem");
 
-module.exports = (request, closingUserId, reply, closeTodoist = false) => {
+module.exports = (request, closingUserId, reply, bot, closeTodoist = false) => {
   closeRequest(request.id, closingUserId)
     .then((res) => {
       if (res.rowCount) {
@@ -14,7 +14,9 @@ module.exports = (request, closingUserId, reply, closeTodoist = false) => {
             completeItem(request.id);
           }
           let content = `הבקשה ${request.content} בוצעה`;
-          closingUserId != 1320316049 ? updateTomer(content) : reply(content);
+          closingUserId != 1320316049
+            ? updateTomer(content)
+            : bot.telegram.sendMessage(request.user_id, content);
         }
       } else reply("הבקשה כבר סגורה");
     })
