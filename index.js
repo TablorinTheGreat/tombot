@@ -8,8 +8,8 @@ const secretPathComponent = require("./src/bot/secretPathComponent");
 
 const expressApp = express();
 
-const hookPath = `/telegraf/${secretPathComponent()}`;
-expressApp.use(bot.webhookCallback(hookPath));
+const hookPath = `telegraf/${secretPathComponent()}`;
+expressApp.use(bot.webhookCallback(`/${hookPath}`));
 bot.telegram.setWebhook(`${process.env.URL}${hookPath}`);
 
 loadReminders(bot);
