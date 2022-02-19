@@ -12,16 +12,9 @@ const hookPath = `/telegraf/${secretPathComponent()}`;
 expressApp.use(bot.webhookCallback(hookPath));
 bot.telegram.setWebhook(`${process.env.URL}${hookPath}`);
 
-<<<<<<< HEAD
 expressApp.post("/", (req, res) => {
   console.log(req);
   // res.send("Hello World!");
-=======
-loadReminders(bot);
-
-expressApp.get("/", (req, res) => {
-  res.send("Hello World!");
->>>>>>> main
 });
 
 expressApp.listen(process.env.PORT);
