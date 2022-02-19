@@ -1,5 +1,6 @@
 const { Scenes, Markup, Composer } = require("telegraf");
 const { createRequest } = require("../../db/actions");
+const { addReminder } = require("../../schedueller/reminders");
 require("dotenv").config();
 
 const urgencyStepHandler = new Composer();
@@ -37,7 +38,8 @@ intervalStepHandler.action(/\w+/, (ctx) => {
   };
   ctx.session.request.time_interval = intervalDict[ctx.match[0]];
   createRequest(ctx.session.request, ctx.from)
-    .then((res) => {
+    .then(({ rows }) => {
+      if (rows.length) addReminder(rows[0]);
       ctx.reply("!בקשה נוספה בהצלחה");
     })
     .catch((err) => {
