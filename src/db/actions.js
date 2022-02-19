@@ -1,26 +1,60 @@
-const SQLBuilder = require("json-sql-builder2");
 const connection = require("./connection");
-var sql = new SQLBuilder("PostgreSQL");
 
-const createRequest = (request, user) =>
-  new Promise((resolve, reject) => {
-    addUserIfDoesntExist(user).catch((err) => reject(err));
+const TodoistId2Request = (todoist_id) => {
+  return connection.query(
+    `SELECT id, user_id, content, urgency, urgent_reason, time_interval
+    from todoist_request
+    inner join requests on id = request_id
+    where todoist_id = ${todoist_id}`
+  );
+};
 
-    const query = sql.$insert({
-      $table: "requests",
-      $documents: {
-        ...request,
-        user_id: user.id,
-        created_on: new Date(),
-      },
-    });
-    connection
-      .query(query.sql + " RETURNING *", query.values)
-      .then((res) => resolve(res))
-      .catch((err) => reject(err));
+const getTodoistId = (requestId) => {
+  return connection.query(
+    `SELECT todoist_id from todoist_request where request_id = ${requestId}`
+  );
+};
+
+const saveTodoistId = (requestId, todoistId) => {
+  return connection.query(
+    "INSERT INTO todoist_request(request_id,todoist_id) VALUES($1,$2)",
+    [requestId, todoistId]
+  );
+};
+
+const createRequest = (request) =>
+  new Promise(async (resolve, reject) => {
+    const res = await connection
+      .query(
+        `INSERT INTO requests(user_id, content, urgency, urgent_reason, time_interval, created_on)
+   VALUES($1,$2,$3,$4,$5,$6) RETURNING id`,
+        [
+          request.user_id,
+          request.content,
+          request.urgency,
+          request.urgent_reason,
+          request.time_interval,
+          new Date(),
+        ]
+      )
+      .catch(reject);
+
+    if (res.rows && res.rows.length) {
+      requestId = res.rows[0].id;
+      connection
+        .query(
+          `SELECT r.id, first_name, content, urgency, urgent_reason, time_interval
+        FROM requests as r 
+        INNER JOIN users as u on r.user_id = u.id
+        where r.id = ${requestId}`
+        )
+        .then(resolve)
+        .catch(reject);
+    }
   });
 
-const addUserIfDoesntExist = async (user) => {
+const addUser = async (user) => {
+  // add User If Doesnt Exist
   connection.query(
     `INSERT INTO users(id, first_name, last_name)
      SELECT ${user.id}, '${user.first_name}', '${user.last_name}'
@@ -65,10 +99,13 @@ const getCronDict = () => {
 
 module.exports = {
   createRequest,
-  addUserIfDoesntExist,
   getRequestsByUser,
   closeRequest,
   getAllRequests,
   getReminders,
   getCronDict,
+  addUser,
+  saveTodoistId,
+  getTodoistId,
+  TodoistId2Request,
 };

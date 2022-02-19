@@ -1,5 +1,5 @@
 const { Scenes, Markup, Composer } = require("telegraf");
-const { createRequest } = require("../../db/actions");
+const createRequest = require("../../requests/createRequest");
 const { addReminder } = require("../../schedueller/reminders");
 require("dotenv").config();
 
@@ -37,15 +37,7 @@ intervalStepHandler.action(/\w+/, (ctx) => {
     day: "1D",
   };
   ctx.session.request.time_interval = intervalDict[ctx.match[0]];
-  createRequest(ctx.session.request, ctx.from)
-    .then(({ rows }) => {
-      if (rows.length) addReminder(rows[0]);
-      ctx.reply("!בקשה נוספה בהצלחה");
-    })
-    .catch((err) => {
-      console.log(err);
-      ctx.reply("הייתה בעיה בשמירת הנתונים");
-    });
+  createRequest(ctx.session.request, (content) => ctx.reply(content));
   return ctx.scene.leave();
 });
 
@@ -53,7 +45,9 @@ const newRequest = new Scenes.WizardScene(
   "NEW_REQUEST_WIZARD",
   (ctx) => {
     ctx.reply("מה את/ה צריך?");
-    ctx.session.request = {};
+    ctx.session.request = {
+      user_id: ctx.from.id,
+    };
     return ctx.wizard.next();
   },
   (ctx) => {

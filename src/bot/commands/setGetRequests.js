@@ -1,10 +1,7 @@
 const { Markup } = require("telegraf");
-const {
-  getRequestsByUser,
-  closeRequest,
-  getAllRequests,
-} = require("../../db/actions");
+const { getRequestsByUser, getAllRequests } = require("../../db/actions");
 const { switchReminderOff } = require("../../schedueller/reminders");
+const closeRequest = require("../../requests/closeRequest");
 
 const setGetRequests = (bot) => {
   bot.command("/getrequests", (ctx) => {
@@ -13,7 +10,7 @@ const setGetRequests = (bot) => {
       getRequests = getAllRequests;
       buttonUi = (request) =>
         `${request.first_name} - ${request.content} ${request.urgency} ${
-          request.urgency_reason ? request.urgency_reason : ""
+          request.urgent_reason ? request.urgent_reason : ""
         }`;
     } else {
       getRequests = getRequestsByUser;
@@ -42,25 +39,14 @@ const setGetRequests = (bot) => {
 
   bot.action(/\d+/, (ctx) => {
     let requestid = parseInt(ctx.match[0]);
-    closeRequest(requestid, ctx.update.callback_query.from.id)
-      .then((res) => {
-        if (res.rowCount) {
-          ctx.reply("הבקשה נסגרה בהצלחה");
-          if (ctx.session.rows) {
-            switchReminderOff(requestid);
-            let request = ctx.session.rows.find((row) => (row.id = requestid));
-            if (ctx.update.callback_query.from.id != 1320316049)
-              request.user_id = 1320316049;
-            bot.telegram.sendMessage(
-              request.user_id,
-              `הבקשה ${request.content} בוצעה`
-            );
-          }
-        } else ctx.reply("הבקשה כבר סגורה");
-      })
-      .catch((err) => {
-        ctx.reply("הייתה בעיה בסגירת הבקשה");
-      });
+    let request = ctx.session.rows.find((row) => (row.id = requestid));
+
+    closeRequest(
+      request,
+      ctx.update.callback_query.from.id,
+      (content) => ctx.reply(content),
+      true
+    );
   });
 };
 
