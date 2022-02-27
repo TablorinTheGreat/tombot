@@ -1,5 +1,5 @@
 const { Scenes } = require("telegraf");
-const updateTomer = require("../utils/updateTomer");
+const { updateTomer } = require("../utils/Telegram");
 
 const id = "ANONYMUS_WIZARD";
 

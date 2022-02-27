@@ -6,8 +6,8 @@ const express = require("express");
 const { bot } = require("./src/bot");
 const secretPathComponent = require("./src/bot/secretPathComponent");
 const closeRequest = require("./src/requests/closeRequest");
-const updateTomer = require("./src/bot/utils/updateTomer");
 const { TodoistId2Request } = require("./src/db/actions");
+const { updateTomer } = require("./src/bot/utils/Telegram");
 
 const expressApp = express();
 

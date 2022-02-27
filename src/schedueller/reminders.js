@@ -1,5 +1,5 @@
 const schedule = require("node-schedule");
-const updateTomer = require("../bot/utils/updateTomer");
+const { updateTomer } = require("../bot/utils/Telegram");
 const cronDict = require("./cronDict");
 
 var reminders = {};

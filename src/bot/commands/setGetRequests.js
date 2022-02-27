@@ -16,7 +16,7 @@ const setGetRequests = (bot) => {
       buttonUi = (request) => request.content;
     }
 
-    getRequests()
+    getRequests(ctx.update.message.from.id)
       .then(({ rows }) => {
         if (rows.length) {
           ctx.session.rows = rows;
