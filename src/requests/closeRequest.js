@@ -1,7 +1,7 @@
 const { updateTomer, sendMessage } = require("../bot/utils/Telegram");
 const { closeRequest } = require("../db/actions");
 const { switchReminderOff } = require("../schedueller/reminders");
-const completeItem = require("../todoist/completeItem");
+const { completeItem } = require("../todoist/completeItem");
 
 module.exports = (request, closingUserId, reply, closeTodoist = false) => {
   closeRequest(request.id, closingUserId)

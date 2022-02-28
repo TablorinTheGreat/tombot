@@ -1,10 +1,14 @@
 const { getTodoistId } = require("../db/actions");
 const TodoistApi = require("./TodoistApi");
 
-module.exports = (requestId) => {
+var completedItems = [];
+const completeItem = (requestId) => {
   getTodoistId(requestId)
     .then(({ rows }) => {
-      TodoistApi.closeTask(parseInt(rows[0].todoist_id)).catch(console.log);
+      let id = parseInt(rows[0].todoist_id);
+      TodoistApi.closeTask(id).catch(console.log);
+      completedItems.push(id);
     })
     .catch(console.log);
 };
+module.exports = { completeItem, completedItems };
