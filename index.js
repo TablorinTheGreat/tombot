@@ -19,12 +19,21 @@ loadReminders(bot);
 expressApp.use(express.json());
 expressApp.post("/closeRequest", (req, res) => {
   let event = req.body.event_data;
-
+  TodoistId2Request(event.id)
+    .then(({ rows }) => {
+      closeRequest(rows[0], 1320316049, (content) =>
+        bot.telegram.sendMessage(rows[0].user_id, content)
+      );
+    })
+    .catch((err) => {
+      console.log(err);
+      updateTomer("הייתה בעיה בסגירת המשימה");
+    });
   res.end();
 });
 
 expressApp.get("/", (req, res) => {
-  res.send("dfghj");
+  res.send("hello :)");
 });
 
 expressApp.listen(process.env.PORT);
