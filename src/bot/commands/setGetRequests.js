@@ -38,7 +38,7 @@ const setGetRequests = (bot) => {
 
   bot.action(/\d+/, (ctx) => {
     let requestid = parseInt(ctx.match[0]);
-    let request = ctx.session.rows.find((row) => (row.id = requestid));
+    let request = ctx.session.rows.find((row) => row.id == requestid);
 
     closeRequest(
       request,
