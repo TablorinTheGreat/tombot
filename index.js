@@ -31,7 +31,7 @@ expressApp.post("/closeRequest", (req, res) => {
 });
 
 expressApp.get("/", (req, res) => {
-  res.send("hello :)llll");
+  res.send("hello :)");
 });
 
 expressApp.listen(process.env.PORT);
