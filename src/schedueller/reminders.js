@@ -1,15 +1,15 @@
 const schedule = require("node-schedule");
+const { updateTomer } = require("../bot/utils/Telegram");
 const cronDict = require("./cronDict");
 
 var reminders = {};
 
-const addReminder = (request, bot) => {
+const addReminder = (request) => {
   const remind = () => {
-    bot.telegram.sendMessage(
-      1320316049,
+    updateTomer(
       `תזכורת\n${request.first_name} ביקש/ה \n${request.content}\n ${
         request.urgency
-      } ${request.urgency_reason ? request.urgency_reason : ""}`
+      } ${request.urgent_reason ? request.urgent_reason : ""}`
     );
   };
 

@@ -1,7 +1,8 @@
 const { Scenes, Markup, Composer } = require("telegraf");
-const { createRequest } = require("../../db/actions");
-const { addReminder } = require("../../schedueller/reminders");
+const createRequest = require("../../requests/createRequest");
 require("dotenv").config();
+
+const id = "NEW_REQUEST_WIZARD";
 
 const urgencyStepHandler = new Composer();
 const intervalStepHandler = new Composer();
@@ -37,23 +38,17 @@ intervalStepHandler.action(/\w+/, (ctx) => {
     day: "1D",
   };
   ctx.session.request.time_interval = intervalDict[ctx.match[0]];
-  createRequest(ctx.session.request, ctx.from)
-    .then(({ rows }) => {
-      if (rows.length) addReminder(rows[0]);
-      ctx.reply("!בקשה נוספה בהצלחה");
-    })
-    .catch((err) => {
-      console.log(err);
-      ctx.reply("הייתה בעיה בשמירת הנתונים");
-    });
+  createRequest(ctx.session.request, (content) => ctx.reply(content));
   return ctx.scene.leave();
 });
 
 const newRequest = new Scenes.WizardScene(
-  "NEW_REQUEST_WIZARD",
+  id,
   (ctx) => {
     ctx.reply("מה את/ה צריך?");
-    ctx.session.request = {};
+    ctx.session.request = {
+      user_id: ctx.from.id,
+    };
     return ctx.wizard.next();
   },
   (ctx) => {
@@ -77,4 +72,4 @@ const newRequest = new Scenes.WizardScene(
   intervalStepHandler
 );
 
-module.exports = { newRequest, id: "NEW_REQUEST_WIZARD" };
+module.exports = { newRequest, id };
